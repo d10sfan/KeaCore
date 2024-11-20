@@ -1,0 +1,86 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:KeaCore.Views"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+        x:Class="KeaCore.Views.MainWindow"
+        x:DataType="local:MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="KeaCore">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid MinWidth="400" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="10">
+            <!-- Grouped Section: Enter URLs Below and Buttons -->
+            <Border Margin="10" BorderThickness="1" BorderBrush="Gray" Grid.Row="0" Padding="10">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Enter URLs Below" FontWeight="Bold" />
+                    <TextBox x:Name="UrlsTextBox" AcceptsReturn="True" Margin="0,5,0,5" Height="100" TextWrapping="Wrap" />
+                    <Button x:Name="AddAllToQueueButton" Content="Add All to Queue" Click="OnAddAllToQueueClicked" />
+                </StackPanel>
+            </Border>
+
+            <!-- Queue Section -->
+            <Border Margin="10" BorderThickness="1" BorderBrush="Gray" Grid.Row="1" Padding="10">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Queue" FontWeight="Bold" />
+                    <DataGrid x:Name="QueueTable"
+                            Margin="0,5,0,0"
+                            AutoGenerateColumns="False"
+                            ItemsSource="{Binding QueueItems, Mode=TwoWay}"
+                            SelectionChanged="OnQueueTableSelectionChanged"
+                            SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <!-- Name Column (Read-Only) -->
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+
+                            <!-- Start At Chapter Column (Editable) -->
+                            <DataGridTextColumn Header="Start At Chapter" Binding="{Binding StartAtChapter, Mode=TwoWay}" Width="*" />
+
+                            <!-- End At Chapter Column (Editable) -->
+                            <DataGridTextColumn Header="End At Chapter" Binding="{Binding EndAtChapter, Mode=TwoWay}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                        <Button x:Name="RemoveSelectedButton" Content="Remove Selected" IsEnabled="False" Click="OnRemoveSelectedClicked" />
+                        <Button x:Name="RemoveAllButton" Content="Remove All" IsEnabled="False" Click="OnRemoveAllClicked" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Options Section -->
+            <Border Margin="10" BorderThickness="1" BorderBrush="Gray" Grid.Row="2" Padding="10">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Options" FontWeight="Bold" />
+                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,5,0,0">
+                        <TextBlock Grid.Column="0" Text="Pick save directory" VerticalAlignment="Center" />
+                        <TextBox x:Name="DirectoryTextBox" Grid.Column="1" HorizontalAlignment="Stretch" />
+                        <Button Grid.Column="2" Content="📁" Width="30" Click="OnDirectoryButtonClick" />
+                    </Grid>
+                    <StackPanel>
+                        <TextBlock Text="Save chapters as" />
+                        <RadioButton Content="PDF" GroupName="SaveChaptersAs" />
+                        <RadioButton x:Name="SaveChaptersCBZRadioButton" Content="CBZ" GroupName="SaveChaptersAs" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Status Section -->
+            <Border Margin="10" BorderThickness="1" BorderBrush="Gray" Grid.Row="3" Padding="10">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Status" FontWeight="Bold" />
+                    <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Stretch" IsEnabled="False" Click="StartBtn_Click" />
+                    <Grid ColumnDefinitions="Auto,*">
+                        <!-- Label for "Currently processing:" -->
+                        <TextBlock Grid.Column="0" Text="Currently processing:" VerticalAlignment="Center" Margin="0,0,5,0" />
+
+                        <!-- Expandable TextBlock -->
+                        <Border Grid.Column="1" BorderThickness="1" BorderBrush="Gray" Padding="5">
+                            <TextBlock x:Name="CurrentlyProcessingLabel" Text="Idle" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</Window>
