@@ -53,13 +53,13 @@ jobs:
       - name: Download Linux Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: KeaCore-linux.zip
+          name: KeaCore-linux
           path: ./
 
       - name: Download Windows Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: KeaCore-windows.zip
+          name: KeaCore-windows
           path: ./
 
       - name: Create Release
