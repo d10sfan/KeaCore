@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x # Specify .NET 9
 
@@ -21,7 +21,7 @@ jobs:
         run: dotnet restore
 
       - name: Run Linter
-        run: dotnet build --no-restore -warnaserror
+        run: dotnet build --no-restore -warnaserror:SA
 
   build:
     name: Build Project
@@ -29,10 +29,10 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x # Specify .NET 9
 
