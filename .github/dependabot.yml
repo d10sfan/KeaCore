@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # Check for updates to NuGet dependencies
+  - package-ecosystem: "nuget"
+    directory: "/" # Location of your .csproj or packages.config file
+    schedule:
+      interval: "weekly" # Check for updates once a week
+    open-pull-requests-limit: 10 # Limit the number of open PRs
+    ignore:
+      # Example: Ignore updates to iTextSharp library
+      - dependency-name: "iTextSharp"
+        versions: ["5.x"]
+
+  # Check for updates to GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/" # Location of your GitHub Actions workflow files
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
