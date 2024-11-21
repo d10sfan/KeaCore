@@ -141,7 +141,7 @@ public partial class MainWindow : Window
                             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
                         }
                     }
-                }
+                },
             },
         };
 
@@ -228,7 +228,7 @@ public partial class MainWindow : Window
             }
         }
 
-        DisableAllControls(this);
+        this.DisableAllControls(this);
         string saveAs = this.GetSelectedSaveOption();
         string savePath = this.DirectoryTextBox.Text ?? string.Empty;
 
@@ -251,7 +251,7 @@ public partial class MainWindow : Window
 
         this.UpdateStatusLabel("Download complete!");
 
-        UpdateButtonStates();
+        this.UpdateButtonStates();
     }
 
     private void DisableAllControls(Control parent)
@@ -265,7 +265,7 @@ public partial class MainWindow : Window
                 // Recursively disable controls for nested containers
                 if (control is Panel || control is ContentControl)
                 {
-                    DisableAllControls(control);
+                    this.DisableAllControls(control);
                 }
             }
         }
