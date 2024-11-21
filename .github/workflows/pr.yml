@@ -21,9 +21,7 @@ jobs:
         run: dotnet restore
 
       - name: Run Linter
-        run: dotnet format --verify-no-changes --severity diagnostic
-        # `--verify-no-changes` ensures the job fails if there are issues.
-        # `--severity diagnostic` includes both warnings and errors.
+        run: dotnet build --no-restore -warnaserror
 
   build:
     name: Build Project
