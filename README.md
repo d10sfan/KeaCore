@@ -1,6 +1,9 @@
 # KeaCore
 
-Kea ported to .NET Core. Allows to download public comics from Webtoons. Based on the project 
+Kea ported to .NET Core. Allows to download public comics from Webtoons. Based on the project Kea.
+
+<img src="https://github.com/user-attachments/assets/6bc4eb25-af1f-45fd-82ad-4cd61a865cda" width="600px">
+
 
 ## Building
 
