@@ -7,17 +7,17 @@ namespace KeaCore
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Compression;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using HtmlAgilityPack;
     using iTextSharp.text;
     using iTextSharp.text.pdf;
-    using System.IO.Compression;
 
     public static class Webtoons
     {
-        private static readonly HttpClient httpClient = new ();
+        private static readonly HttpClient HttpClient = new ();
 
         public static event Action<string>? StatusUpdated;
 
@@ -129,7 +129,7 @@ namespace KeaCore
                 string pageUrl = $"{url}&page={page++}";
                 OnStatusUpdated($"Getting page - {pageUrl}");
 
-                string html = await httpClient.GetStringAsync(pageUrl);
+                string html = await HttpClient.GetStringAsync(pageUrl);
                 var innerChapters = ParseChapterLinks(html, ref firstLink, ref foundEnd);
 
                 if (innerChapters.Count == 0)
@@ -201,15 +201,30 @@ namespace KeaCore
             }
         }
 
+        private static string MakeFileNameSafe(string fileName)
+        {
+            // List of invalid characters for file names in common file systems
+            char[] invalidChars = System.IO.Path.GetInvalidFileNameChars();
+
+            // Replace each invalid character with an underscore or another safe character
+            foreach (char c in invalidChars)
+            {
+                fileName = fileName.Replace(c, '_');
+            }
+
+            return fileName;
+        }
+
         private static async Task DownloadChapterAsync(string savePath, string comicName, string chapterUrl, string chapterName, string saveAs, int chapterIndex)
         {
-            string chapterPath = Path.Combine(savePath, $"({chapterIndex + 1}) {chapterName}");
+            string safeChapterName = MakeFileNameSafe(chapterName);
+            string chapterPath = Path.Combine(savePath, $"({chapterIndex + 1}) {safeChapterName}");
             Directory.CreateDirectory(chapterPath);
 
             using var request = new HttpRequestMessage(HttpMethod.Get, chapterUrl);
             request.Headers.Add("Cookie", "pagGDPR=true;");
 
-            using var response = await httpClient.SendAsync(request);
+            using var response = await HttpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
             string html = await response.Content.ReadAsStringAsync();
@@ -227,7 +242,7 @@ namespace KeaCore
                 imageRequest.Headers.Add("Cookie", "pagGDPR=true;");
                 imageRequest.Headers.Referrer = new Uri(chapterUrl);
 
-                using var imageResponse = await httpClient.SendAsync(imageRequest);
+                using var imageResponse = await HttpClient.SendAsync(imageRequest);
                 imageResponse.EnsureSuccessStatusCode();
 
                 await using var fileStream = new FileStream(imagePath, FileMode.Create);
@@ -238,10 +253,11 @@ namespace KeaCore
 
             if (saveAs == "PDF")
             {
-                SaveChapterAsPdf(chapterPath, savePath, chapterName, chapterIndex);
+                SaveChapterAsPdf(chapterPath, savePath, safeChapterName, chapterIndex);
             }
-            else if(saveAs == "CBZ") {
-                string cbzPath = Path.Combine(savePath, $"({chapterIndex + 1}) {chapterName}.cbz");
+            else if (saveAs == "CBZ")
+            {
+                string cbzPath = Path.Combine(savePath, $"({chapterIndex + 1}) {safeChapterName}.cbz");
                 ZipFile.CreateFromDirectory(chapterPath, cbzPath);
             }
 

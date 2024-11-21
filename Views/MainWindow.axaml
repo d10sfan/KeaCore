@@ -10,7 +10,9 @@
         Title="KeaCore">
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid MinWidth="400" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="10">
+         <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+          Margin="10"
+          VerticalAlignment="Stretch">
             <!-- Grouped Section: Enter URLs Below and Buttons -->
             <Border Margin="10" BorderThickness="1" BorderBrush="Gray" Grid.Row="0" Padding="10">
                 <StackPanel Spacing="10">
