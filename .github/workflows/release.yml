@@ -32,9 +32,9 @@ jobs:
       - name: Archive Build
         run: |
             if [ ${{ matrix.os }} == 'windows-latest' ]; then
-            powershell -Command "Compress-Archive -Path ./out/* -DestinationPath KeaCore-windows.zip"
+                powershell -Command "Compress-Archive -Path ./out/* -DestinationPath KeaCore-windows.zip"
             else
-            cd out && zip -r ../KeaCore-linux.zip * && cd ..
+                cd out && zip -r ../KeaCore-linux.zip * && cd ..
             fi
         shell: bash
 
