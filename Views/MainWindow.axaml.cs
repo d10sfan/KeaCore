@@ -18,9 +18,6 @@ namespace KeaCore.Views;
 
 public partial class MainWindow : Window
 {
-    // Define QueueItems as an ObservableCollection
-    public ObservableCollection<Webtoons.QueueItem> QueueItems { get; } = new ObservableCollection<Webtoons.QueueItem>();
-
     public MainWindow()
     {
         this.InitializeComponent();
@@ -40,6 +37,9 @@ public partial class MainWindow : Window
         // Subscribe to the Webtoons status updates
         Webtoons.StatusUpdated += this.UpdateStatusLabel;
     }
+
+    // Define QueueItems as an ObservableCollection
+    public ObservableCollection<Webtoons.QueueItem> QueueItems { get; } = new ObservableCollection<Webtoons.QueueItem>();
 
     protected override void OnClosed(EventArgs e)
     {
@@ -133,14 +133,14 @@ public partial class MainWindow : Window
                         {
                             Text = message,
                             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-                            MaxWidth = 380
+                            MaxWidth = 380,
                         },
                         new Button
                         {
                             Content = "Close",
-                            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
-                        }
-                    }
+                            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                        },
+                    },
                 },
             },
         };
