@@ -21,22 +21,6 @@ namespace KeaCore
 
         public static event Action<string>? StatusUpdated;
 
-        private static void OnStatusUpdated(string status)
-        {
-            StatusUpdated?.Invoke(status);
-        }
-
-        public class QueueItem
-        {
-            public string OriginalUrl { get; set; } = string.Empty;
-
-            public string Name { get; set; } = string.Empty;
-
-            public string StartAtChapter { get; set; } = "1";
-
-            public string EndAtChapter { get; set; } = "end";
-        }
-
         public static bool TryExtractNameFromUrl(string url, out string name)
         {
             name = string.Empty;
@@ -110,6 +94,24 @@ namespace KeaCore
             }
 
             return chapters;
+        }
+
+        public static async Task DownloadComicAsync(string savePath, string comicName, List<(string, string)> chapters, string saveAs)
+        {
+            Directory.CreateDirectory(savePath);
+            int chapterIndex = 0;
+
+            foreach (var (chapterUrl, chapterName) in chapters)
+            {
+                OnStatusUpdated($"Downloading {comicName} chapter {chapterIndex + 1}");
+                await DownloadChapterAsync(savePath, comicName, chapterUrl, chapterName, saveAs, chapterIndex);
+                chapterIndex++;
+            }
+        }
+
+        private static void OnStatusUpdated(string status)
+        {
+            StatusUpdated?.Invoke(status);
         }
 
         private static async Task<List<(string, string)>> GetChapterAsync(string url)
@@ -186,19 +188,6 @@ namespace KeaCore
             }
 
             return chapters;
-        }
-
-        public static async Task DownloadComicAsync(string savePath, string comicName, List<(string, string)> chapters, string saveAs)
-        {
-            Directory.CreateDirectory(savePath);
-            int chapterIndex = 0;
-
-            foreach (var (chapterUrl, chapterName) in chapters)
-            {
-                OnStatusUpdated($"Downloading {comicName} chapter {chapterIndex + 1}");
-                await DownloadChapterAsync(savePath, comicName, chapterUrl, chapterName, saveAs, chapterIndex);
-                chapterIndex++;
-            }
         }
 
         private static string MakeFileNameSafe(string fileName)
@@ -310,6 +299,17 @@ namespace KeaCore
             }
 
             return imageUrls;
+        }
+
+        public class QueueItem
+        {
+            public string OriginalUrl { get; set; } = string.Empty;
+
+            public string Name { get; set; } = string.Empty;
+
+            public string StartAtChapter { get; set; } = "1";
+
+            public string EndAtChapter { get; set; } = "end";
         }
     }
 }

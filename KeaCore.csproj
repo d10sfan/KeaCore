@@ -8,7 +8,7 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <NoWarn>
-      SA1200
+      SA1200,SA0001
     </NoWarn>
   </PropertyGroup>
 
