@@ -240,16 +240,25 @@ public partial class MainWindow : Window
 
         var urls = this.QueueItems.Select(q => q.OriginalUrl).ToList();
 
-        this.UpdateStatusLabel("Getting chapters..");
-        var chapters = await Webtoons.GetChaptersAsync(urls);
-
-        for (int i = 0; i < chapters.Count; i++)
+        try
         {
-            this.UpdateStatusLabel($"Getting comic {i + 1}..");
-            await Webtoons.DownloadComicAsync(savePath, this.QueueItems[i].Name, chapters[i], saveAs, this.QueueItems[i].StartAtChapter, this.QueueItems[i].EndAtChapter);
+            this.UpdateStatusLabel("Getting chapters..");
+            var chapters = await Webtoons.GetChaptersAsync(urls);
+
+            for (int i = 0; i < chapters.Count; i++)
+            {
+                this.UpdateStatusLabel($"Getting comic {i + 1}..");
+                await Webtoons.DownloadComicAsync(savePath, this.QueueItems[i].Name, chapters[i], saveAs, this.QueueItems[i].StartAtChapter, this.QueueItems[i].EndAtChapter);
+            }
+
+            this.UpdateStatusLabel("Download complete!");
+        }
+        catch (Exception ex)
+        {
+            this.UpdateStatusLabel($"Error downloading: {ex.Message}");
         }
 
-        this.UpdateStatusLabel("Download complete!");
+        this.EnableAllControls(this);
 
         this.UpdateButtonStates();
     }
@@ -266,6 +275,23 @@ public partial class MainWindow : Window
                 if (control is Panel || control is ContentControl)
                 {
                     this.DisableAllControls(control);
+                }
+            }
+        }
+    }
+
+    private void EnableAllControls(Control parent)
+    {
+        foreach (var child in parent.GetLogicalChildren())
+        {
+            if (child is Control control)
+            {
+                control.IsEnabled = true;
+
+                // Recursively disable controls for nested containers
+                if (control is Panel || control is ContentControl)
+                {
+                    this.EnableAllControls(control);
                 }
             }
         }

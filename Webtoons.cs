@@ -233,6 +233,23 @@ namespace KeaCore
         {
             string safeChapterName = MakeFileNameSafe(chapterName);
             string chapterPath = Path.Combine(savePath, $"({chapterIndex + 1}) {safeChapterName}");
+
+            string chapterFilePath = string.Empty;
+            if (saveAs == "PDF")
+            {
+                chapterFilePath = Path.Combine(savePath, $"({chapterIndex + 1}) {safeChapterName}.pdf");
+            }
+            else if (saveAs == "CBZ")
+            {
+                chapterFilePath = Path.Combine(savePath, $"({chapterIndex + 1}) {safeChapterName}.cbz");
+            }
+
+            if (System.IO.File.Exists(chapterFilePath))
+            {
+                OnStatusUpdated($"Skipping chapter {chapterIndex + 1} of {comicName}, already downloaded.");
+                return;
+            }
+
             Directory.CreateDirectory(chapterPath);
 
             using var request = new HttpRequestMessage(HttpMethod.Get, chapterUrl);
@@ -267,25 +284,23 @@ namespace KeaCore
 
             if (saveAs == "PDF")
             {
-                SaveChapterAsPdf(chapterPath, savePath, safeChapterName, chapterIndex);
+                SaveChapterAsPdf(chapterPath, savePath, safeChapterName, chapterIndex, chapterFilePath);
             }
             else if (saveAs == "CBZ")
             {
-                string cbzPath = Path.Combine(savePath, $"({chapterIndex + 1}) {safeChapterName}.cbz");
-                ZipFile.CreateFromDirectory(chapterPath, cbzPath);
+                ZipFile.CreateFromDirectory(chapterPath, chapterFilePath);
             }
 
             Directory.Delete(chapterPath, true);
         }
 
-        private static void SaveChapterAsPdf(string chapterPath, string savePath, string chapterName, int chapterIndex)
+        private static void SaveChapterAsPdf(string chapterPath, string savePath, string chapterName, int chapterIndex, string pdfPath)
         {
             var imageFiles = Directory.GetFiles(chapterPath, "*.jpg").OrderBy(f => f).ToArray();
             Document doc = new Document();
 
             try
             {
-                string pdfPath = Path.Combine(savePath, $"({chapterIndex + 1}) {chapterName}.pdf");
                 PdfWriter.GetInstance(doc, new FileStream(pdfPath, FileMode.Create));
                 doc.Open();
 
