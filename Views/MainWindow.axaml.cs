@@ -245,8 +245,8 @@ public partial class MainWindow : Window
 
         for (int i = 0; i < chapters.Count; i++)
         {
-            this.UpdateStatusLabel($"Getting chapter {i + 1}..");
-            await Webtoons.DownloadComicAsync(savePath, this.QueueItems[i].Name, chapters[i], saveAs);
+            this.UpdateStatusLabel($"Getting comic {i + 1}..");
+            await Webtoons.DownloadComicAsync(savePath, this.QueueItems[i].Name, chapters[i], saveAs, this.QueueItems[i].StartAtChapter, this.QueueItems[i].EndAtChapter);
         }
 
         this.UpdateStatusLabel("Download complete!");

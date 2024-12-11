@@ -96,15 +96,40 @@ namespace KeaCore
             return chapters;
         }
 
-        public static async Task DownloadComicAsync(string savePath, string comicName, List<(string, string)> chapters, string saveAs)
+        public static async Task DownloadComicAsync(string savePath, string comicName, List<(string, string)> chapters, string saveAs, string startAtChapter, string endAtChapter)
         {
-            Directory.CreateDirectory(savePath);
+            string comicSavePath = Path.Combine(savePath, comicName);
+            Directory.CreateDirectory(comicSavePath);
             int chapterIndex = 0;
+
+            if (!int.TryParse(endAtChapter, out int endInt))
+            {
+                endInt = -1;
+            }
+
+            if (!int.TryParse(startAtChapter, out int startInt))
+            {
+                startInt = 1;
+            }
+
+            OnStatusUpdated($"DownloadComicAsync {comicName} startInt = {startInt} endInt = {endInt}");
 
             foreach (var (chapterUrl, chapterName) in chapters)
             {
-                OnStatusUpdated($"Downloading {comicName} chapter {chapterIndex + 1}");
-                await DownloadChapterAsync(savePath, comicName, chapterUrl, chapterName, saveAs, chapterIndex);
+                if ((chapterIndex + 1) < startInt)
+                {
+                    OnStatusUpdated($"Skipping {comicName} chapter {chapterIndex + 1} because of startInt {startInt}");
+                }
+                else if (endInt != -1 && (chapterIndex + 1) > endInt)
+                {
+                    OnStatusUpdated($"Skipping {comicName} chapter {chapterIndex + 1} because of endInt {endInt}");
+                }
+                else
+                {
+                    OnStatusUpdated($"Downloading {comicName} chapter {chapterIndex + 1}");
+                    await DownloadChapterAsync(comicSavePath, comicName, chapterUrl, chapterName, saveAs, chapterIndex);
+                }
+
                 chapterIndex++;
             }
         }
