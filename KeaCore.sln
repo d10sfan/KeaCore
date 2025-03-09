@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeaCore.Common", "KeaCore.Common\KeaCore.Common.csproj", "{1A653BAA-C8D5-46BB-860C-A1CF7C8104EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeaCore.UI", "KeaCore.UI\KeaCore.UI.csproj", "{BC7C3A69-15A7-4194-B10E-FBD62C5945E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeaCore.CLI", "KeaCore.CLI\KeaCore.CLI.csproj", "{3C2F89BF-EA5E-4876-9BE2-CF4AEB508741}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A653BAA-C8D5-46BB-860C-A1CF7C8104EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A653BAA-C8D5-46BB-860C-A1CF7C8104EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A653BAA-C8D5-46BB-860C-A1CF7C8104EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A653BAA-C8D5-46BB-860C-A1CF7C8104EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC7C3A69-15A7-4194-B10E-FBD62C5945E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC7C3A69-15A7-4194-B10E-FBD62C5945E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC7C3A69-15A7-4194-B10E-FBD62C5945E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC7C3A69-15A7-4194-B10E-FBD62C5945E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C2F89BF-EA5E-4876-9BE2-CF4AEB508741}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C2F89BF-EA5E-4876-9BE2-CF4AEB508741}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C2F89BF-EA5E-4876-9BE2-CF4AEB508741}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C2F89BF-EA5E-4876-9BE2-CF4AEB508741}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
