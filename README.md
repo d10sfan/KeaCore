@@ -9,7 +9,7 @@ Kea ported to .NET Core. Allows to download public comics from Webtoons. Based o
 
 Make sure .net core 9 is installed and available. The project is multi-platform, although has just been tested on Linux.
 
-Then you can run `dotnet run` to build and run the project, or use `dotnet build` just for building.
+Then you can run `dotnet run --project KeaCore.UI` to build and run the project, or use `dotnet build` just for building.
 
 ## Using
 
