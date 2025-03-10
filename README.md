@@ -11,6 +11,8 @@ Make sure .net core 9 is installed and available. The project is multi-platform,
 
 Then you can run `dotnet run --project KeaCore.UI` to build and run the project, or use `dotnet build` just for building.
 
+There is also a CLI project, which has a Dockerfile for using.
+
 ## Using
 
 Using your build or one of the releases provided, you can use the UI to enter webtoon urls, add them to the queue, manage the queue, pick options like the save directory and what to save the chapters as, and then the Start button.
