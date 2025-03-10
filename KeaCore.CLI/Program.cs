@@ -4,47 +4,41 @@ using System.Linq;
 using System.Threading.Tasks;
 using KeaCore.Common;
 
-const string PrefixEntry = "KEACORE_ENTRY_";
 const string PrefixTitle = "KEACORE_TITLE_NUM_";
+const string FolderPathVar = "KEACORE_FOLDER_PATH";
 
 // Subscribe to Webtoons status updates
 Webtoons.StatusUpdated += PrintStatusUpdate;
 
-// Get all environment variables and filter for Webtoon entries
+// Get the global folder path
+string? folderPath = Environment.GetEnvironmentVariable(FolderPathVar);
+
+// Ensure folder path is provided
+if (string.IsNullOrWhiteSpace(folderPath))
+{
+    Console.WriteLine($"Error: The environment variable {FolderPathVar} is missing or empty.");
+    return;
+}
+
+// Get all environment variables and filter for Webtoon title numbers
 var envVars = Environment.GetEnvironmentVariables().Cast<System.Collections.DictionaryEntry>();
 
-// Get entries (folder paths)
-var entries = envVars
-.Where(entry => entry.Key is string key && key.StartsWith(PrefixEntry))
+// Get title numbers
+var processedEntries = envVars
+.Where(entry => entry.Key is string key && key.StartsWith(PrefixTitle))
 .Select(entry =>
-{
-    string key = entry.Key?.ToString() ?? string.Empty;
-    string name = key.Length > PrefixEntry.Length ? key[PrefixEntry.Length..] : string.Empty; // Remove prefix
-    string folderPath = entry.Value as string ?? string.Empty; // Ensure folder path is a string
-    return new KeaCoreEntry(name, folderPath, TitleNum: null); // TitleNum will be assigned later
-})
-.ToDictionary(entry => entry.Name); // Store in a dictionary for fast lookup
-
-// Get title numbers and map them to the correct entry
-foreach (var entry in envVars.Where(e => e.Key is string key && key.StartsWith(PrefixTitle)))
 {
     string key = entry.Key?.ToString() ?? string.Empty;
     string name = key.Length > PrefixTitle.Length ? key[PrefixTitle.Length..] : string.Empty; // Remove prefix
     string titleNum = entry.Value as string ?? string.Empty; // Ensure titleNum is a string
-
-    if (entries.ContainsKey(name))
-    {
-        entries[name] = entries[name] with { TitleNum = titleNum }; // Assign TitleNum using record immutability
-    }
-}
-
-// Convert back to array
-var processedEntries = entries.Values.ToArray();
+    return new KeaCoreEntry(name, titleNum);
+})
+.ToArray();
 
 // Exit if no valid entries were found
 if (processedEntries.Length == 0)
 {
-    Console.WriteLine("No valid KEACORE_ENTRY_ environment variables found.");
+    Console.WriteLine("No valid KEACORE_TITLE_NUM_ environment variables found.");
     return;
 }
 
@@ -54,12 +48,12 @@ for (int i = 0; i < processedEntries.Length; i++)
 {
     var entry = processedEntries[i];
     Console.WriteLine($"Processing: {entry.Name}");
-    Console.WriteLine($"Saving to: {entry.FolderPath}");
+    Console.WriteLine($"Saving to: {folderPath}");
 
     // Ensure TitleNum is available
     if (string.IsNullOrWhiteSpace(entry.TitleNum))
     {
-        Console.WriteLine($"Skipping {entry.Name}: No matching KEACORE_TITLE_NUM_ value found.");
+        Console.WriteLine($"Skipping {entry.Name}: No title number found.");
         continue;
     }
 
@@ -75,7 +69,7 @@ for (int i = 0; i < processedEntries.Length; i++)
 
     // ✅ Fetch chapters
     Console.WriteLine("Fetching chapters...");
-    var chapters = await Webtoons.GetChaptersAsync(new List<string> { webtoonUrl });
+    var chapters = await Webtoons.GetChaptersAsync(new List<string> { webtoonUrl }, 4);
 
     // ✅ Fix: Ensure `chapters.Count` is being compared correctly
     if (chapters == null || chapters.Count == 0)
@@ -87,7 +81,7 @@ for (int i = 0; i < processedEntries.Length; i++)
     // ✅ Download each Webtoon chapter
     Console.WriteLine($"Downloading {chapters.Count} chapters...");
     await Webtoons.DownloadComicAsync(
-        entry.FolderPath,
+        folderPath,
         extractedName,
         chapters.First(), // ✅ Fix: Ensure a valid chapter list is passed
                                       "CBZ",
@@ -117,4 +111,4 @@ void PrintStatusUpdate(string status)
 }
 
 // ✅ Move the record **below** top-level statements to avoid compilation errors
-record KeaCoreEntry(string Name, string FolderPath, string? TitleNum);
+record KeaCoreEntry(string Name, string TitleNum);
