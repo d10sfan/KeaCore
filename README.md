@@ -19,6 +19,36 @@ Using your build or one of the releases provided, you can use the UI to enter we
 
 Once you have filled out all of the required fields, you can click the Start button, and then the progress will be shown at the bottom of the screen.
 
+## Using (Docker Version)
+
+This can be used to download on a schedule, for example:
+
+```yaml
+  keacore-cli:
+    image: ghcr.io/d10sfan/keacore-cli:latest
+    container_name: keacore-cli
+    restart: "no"  # Prevents automatic restart after completion
+    stdin_open: true  # Keep stdin open for interactive mode
+    tty: true         # Allocate a pseudo-TTY
+    environment:
+      - KEACORE_FOLDER_PATH=/data
+      - KEACORE_TITLE_NUM_<toon_url_name_here>=<number_here>
+    volumes:
+      - <your_path_here>:/data
+    labels:
+      - "ofelia.enabled=true"
+      - "ofelia.job-exec.run.schedule=0 3 * * *"  # Runs daily at 3 AM
+      - "ofelia.job-exec.run.command=docker start -a keacore-cli"  # Restart the stopped container
+
+  ofelia:
+    image: mcuadros/ofelia:latest
+    container_name: ofelia
+    restart: always
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Required to control Docker
+```
+
 ## Thanks To
 
 * Original Project Kea - https://github.com/RustingRobot/Kea
