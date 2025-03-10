@@ -21,7 +21,9 @@ Once you have filled out all of the required fields, you can click the Start but
 
 ## Using (Docker Version)
 
-This can be used to download on a schedule, for example:
+This can be used to download on a schedule, for example.
+
+Note that this will only grab the first 4 pages to avoid rate limiting. It's recommended to download the whole series as needed using the UI, and then use this way to keep up to date from there.
 
 ```yaml
   keacore-cli:
