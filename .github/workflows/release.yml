@@ -93,8 +93,11 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/keacore-cli:latest .
+          docker build -t ghcr.io/${{ github.repository_owner }}/keacore-cli:latest \
+                       -t ghcr.io/${{ github.repository_owner }}/keacore-cli:${{ env.VERSION }} .
 
       - name: Push Docker Image to GHCR
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/keacore-cli:latest
+          docker push ghcr.io/${{ github.repository_owner }}/keacore-cli:${{ env.VERSION }}
+
