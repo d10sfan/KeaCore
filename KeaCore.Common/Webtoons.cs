@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace KeaCore
+namespace KeaCore.Common
 {
     using System;
     using System.Collections.Generic;
@@ -83,13 +83,13 @@ namespace KeaCore
             return true;
         }
 
-        public static async Task<List<List<(string, string)>>> GetChaptersAsync(List<string> urls)
+        public static async Task<List<List<(string, string)>>> GetChaptersAsync(List<string> urls, int maxPages = -1)
         {
             var chapters = new List<List<(string, string)>>();
 
             foreach (var url in urls)
             {
-                var chapterLinks = await GetChapterAsync(url);
+                var chapterLinks = await GetChapterAsync(url, maxPages);
                 chapters.Add(chapterLinks);
             }
 
@@ -139,7 +139,7 @@ namespace KeaCore
             StatusUpdated?.Invoke(status);
         }
 
-        private static async Task<List<(string, string)>> GetChapterAsync(string url)
+        private static async Task<List<(string, string)>> GetChapterAsync(string url, int maxPages)
         {
             var chapters = new List<(string, string)>();
             if (string.IsNullOrWhiteSpace(url))
@@ -154,7 +154,14 @@ namespace KeaCore
             while (true)
             {
                 string pageUrl = $"{url}&page={page++}";
+
+                if(maxPages != -1 && page > (maxPages + 1)) {
+                    break;
+                }
+
                 OnStatusUpdated($"Getting page - {pageUrl}");
+
+                await Task.Delay(TimeSpan.FromSeconds(5));
 
                 string html = await HttpClient.GetStringAsync(pageUrl);
                 var innerChapters = ParseChapterLinks(html, ref firstLink, ref foundEnd);
@@ -232,21 +239,26 @@ namespace KeaCore
         private static async Task DownloadChapterAsync(string savePath, string comicName, string chapterUrl, string chapterName, string saveAs, int chapterIndex)
         {
             string safeChapterName = MakeFileNameSafe(chapterName);
-            string chapterPath = Path.Combine(savePath, $"({chapterIndex + 1}) {safeChapterName}");
+
+            var uri = new Uri(chapterUrl);
+            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var episodeNumber = queryParams["episode_no"];
+
+            string chapterPath = Path.Combine(savePath, $"({episodeNumber}) {safeChapterName}");
 
             string chapterFilePath = string.Empty;
             if (saveAs == "PDF")
             {
-                chapterFilePath = Path.Combine(savePath, $"({chapterIndex + 1}) {safeChapterName}.pdf");
+                chapterFilePath = Path.Combine(savePath, $"({episodeNumber}) {safeChapterName}.pdf");
             }
             else if (saveAs == "CBZ")
             {
-                chapterFilePath = Path.Combine(savePath, $"({chapterIndex + 1}) {safeChapterName}.cbz");
+                chapterFilePath = Path.Combine(savePath, $"({episodeNumber}) {safeChapterName}.cbz");
             }
 
             if (System.IO.File.Exists(chapterFilePath))
             {
-                OnStatusUpdated($"Skipping chapter {chapterIndex + 1} of {comicName}, already downloaded.");
+                OnStatusUpdated($"Skipping chapter {episodeNumber} of {comicName}, already downloaded.");
                 return;
             }
 
@@ -265,9 +277,9 @@ namespace KeaCore
             int imageIndex = 0;
             foreach (var imageUrl in imageUrls)
             {
-                OnStatusUpdated($"Downloading image {imageIndex} of chapter {chapterIndex + 1} of {comicName}");
+                OnStatusUpdated($"Downloading image {imageIndex} of chapter {episodeNumber} of {comicName}");
 
-                string imagePath = Path.Combine(chapterPath, $"{comicName}_Ch{chapterIndex + 1}_Img{imageIndex}.jpg");
+                string imagePath = Path.Combine(chapterPath, $"{comicName}_Ch{episodeNumber}_Img{imageIndex}.jpg");
 
                 using var imageRequest = new HttpRequestMessage(HttpMethod.Get, imageUrl);
                 imageRequest.Headers.Add("Cookie", "pagGDPR=true;");

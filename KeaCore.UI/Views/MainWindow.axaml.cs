@@ -13,6 +13,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Threading;
+using KeaCore.Common;
 
 namespace KeaCore.Views;
 
