@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace KeaCore
+namespace KeaCore.Common
 {
     using System;
     using System.Collections.Generic;
