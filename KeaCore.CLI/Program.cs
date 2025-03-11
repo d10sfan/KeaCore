@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using KeaCore.Common;
 
 const string PrefixTitle = "KEACORE_TITLE_NUM_";
+const string PrefixGenre = "KEACORE_TITLE_GENRE_";
 const string FolderPathVar = "KEACORE_FOLDER_PATH";
 
 // Subscribe to Webtoons status updates
@@ -20,20 +21,36 @@ if (string.IsNullOrWhiteSpace(folderPath))
     return;
 }
 
-// Get all environment variables and filter for Webtoon title numbers
+// Get all environment variables and filter for Webtoon title numbers & genres
 var envVars = Environment.GetEnvironmentVariables().Cast<System.Collections.DictionaryEntry>();
 
 // Get title numbers
-var processedEntries = envVars
+var titleEntries = envVars
 .Where(entry => entry.Key is string key && key.StartsWith(PrefixTitle))
 .Select(entry =>
 {
     string key = entry.Key?.ToString() ?? string.Empty;
     string name = key.Length > PrefixTitle.Length ? key[PrefixTitle.Length..] : string.Empty; // Remove prefix
     string titleNum = entry.Value as string ?? string.Empty; // Ensure titleNum is a string
-    return new KeaCoreEntry(name, titleNum);
+    return new KeaCoreEntry(name, titleNum, Genre: null); // Genre will be assigned later
 })
-.ToArray();
+.ToDictionary(entry => entry.Name); // Store in a dictionary for fast lookup
+
+// Get genres and map them to the correct entry
+foreach (var entry in envVars.Where(e => e.Key is string key && key.StartsWith(PrefixGenre)))
+{
+    string key = entry.Key?.ToString() ?? string.Empty;
+    string name = key.Length > PrefixGenre.Length ? key[PrefixGenre.Length..] : string.Empty; // Remove prefix
+    string genre = entry.Value as string ?? "canvas"; // Default to "canvas" if missing
+
+    if (titleEntries.ContainsKey(name))
+    {
+        titleEntries[name] = titleEntries[name] with { Genre = genre }; // Assign Genre
+    }
+}
+
+// Convert back to array
+var processedEntries = titleEntries.Values.ToArray();
 
 // Exit if no valid entries were found
 if (processedEntries.Length == 0)
@@ -48,6 +65,7 @@ for (int i = 0; i < processedEntries.Length; i++)
 {
     var entry = processedEntries[i];
     Console.WriteLine($"Processing: {entry.Name}");
+    Console.WriteLine($"Genre: {entry.Genre}");
     Console.WriteLine($"Saving to: {folderPath}");
 
     // Ensure TitleNum is available
@@ -57,8 +75,8 @@ for (int i = 0; i < processedEntries.Length; i++)
         continue;
     }
 
-    // Construct Webtoon URL using TitleNum
-    string webtoonUrl = $"https://www.webtoons.com/en/canvas/{entry.Name}/list?title_no={entry.TitleNum}";
+    // Construct Webtoon URL using Genre and TitleNum
+    string webtoonUrl = $"https://www.webtoons.com/en/{entry.Genre}/{entry.Name}/list?title_no={entry.TitleNum}";
 
     // ✅ Validate the name by extracting it from the URL
     if (!Webtoons.TryExtractNameFromUrl(webtoonUrl, out string extractedName))
@@ -71,7 +89,7 @@ for (int i = 0; i < processedEntries.Length; i++)
     Console.WriteLine("Fetching chapters...");
     var chapters = await Webtoons.GetChaptersAsync(new List<string> { webtoonUrl }, 4);
 
-    // ✅ Fix: Ensure `chapters.Count` is being compared correctly
+    // ✅ Ensure chapters exist
     if (chapters == null || chapters.Count == 0)
     {
         Console.WriteLine($"No chapters found for {entry.Name}");
@@ -83,7 +101,7 @@ for (int i = 0; i < processedEntries.Length; i++)
     await Webtoons.DownloadComicAsync(
         folderPath,
         extractedName,
-        chapters.First(), // ✅ Fix: Ensure a valid chapter list is passed
+        chapters.First(),
                                       "CBZ",
                                       "1",
                                       "end"
@@ -110,5 +128,5 @@ void PrintStatusUpdate(string status)
     Console.WriteLine($"[Status] {status}");
 }
 
-// ✅ Move the record **below** top-level statements to avoid compilation errors
-record KeaCoreEntry(string Name, string TitleNum);
+// ✅ Updated record with Genre field
+record KeaCoreEntry(string Name, string TitleNum, string? Genre);
