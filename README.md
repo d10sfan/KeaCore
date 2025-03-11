@@ -25,31 +25,11 @@ This can be used to download on a schedule, for example.
 
 Note that this will only grab the first 4 pages to avoid rate limiting. It's recommended to download the whole series as needed using the UI, and then use this way to keep up to date from there.
 
-```yaml
-  keacore-cli:
-    image: ghcr.io/d10sfan/keacore-cli:latest
-    container_name: keacore-cli
-    restart: "no"  # Prevents automatic restart after completion
-    stdin_open: true  # Keep stdin open for interactive mode
-    tty: true         # Allocate a pseudo-TTY
-    environment:
-      - KEACORE_FOLDER_PATH=/data
-      - KEACORE_TITLE_NUM_<toon_url_name_here>=<number_here>
-    volumes:
-      - <your_path_here>:/data
-    labels:
-      - "ofelia.enabled=true"
-      - "ofelia.job-exec.run.schedule=0 3 * * *"  # Runs daily at 3 AM
-      - "ofelia.job-exec.run.command=docker start -a keacore-cli"  # Restart the stopped container
-
-  ofelia:
-    image: mcuadros/ofelia:latest
-    container_name: ofelia
-    restart: always
-    command: daemon --docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock  # Required to control Docker
+```shell
+docker run --rm -v <your-path-here>:/data -e KEACORE_FOLDER_PATH=/data -e KEACORE_TITLE_NUM_<webtoons_name_here>=<title_no_here> ghcr.io/d10sfan/keacore-cli:v2.0.0
 ```
+
+Then you can run that manually or execute a cron job.
 
 ## Thanks To
 
