@@ -39,7 +39,7 @@ jobs:
         shell: bash
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: KeaCore-UI-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'windows' }}
           path: KeaCore-UI-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'windows' }}.zip
