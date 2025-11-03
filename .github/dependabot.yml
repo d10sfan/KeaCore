@@ -10,6 +10,12 @@ updates:
       # Example: Ignore updates to iTextSharp library
       - dependency-name: "iTextSharp"
         versions: ["5.x"]
+    groups:
+      avalonia:
+        patterns:
+          - "Avalonia*"
+          # Optional: include lowercase just in case
+          - "avalonia*"
 
   # Check for updates to GitHub Actions
   - package-ecosystem: "github-actions"
